@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | APK Signer{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  <!-- ================= LEFT: WORKFLOW ================= -->
+  <div class="col-lg-8">
+
+    <ul class="nav nav-tabs cyber-tabs" id="mainTabs" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-upload" type="button"><i class="fa-solid fa-upload me-1"></i>Upload &amp; Sign</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-keystore" type="button"><i class="fa-solid fa-key me-1"></i>Generate Keystore</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-custom" type="button"><i class="fa-solid fa-file-signature me-1"></i>Sign Custom</button></li>
+    </ul>
+
+    <div class="tab-content cyber-card p-4 mt-0">
+
+      <!-- ============ UPLOAD + DEFAULT SIGN ============ -->
+      <div class="tab-pane fade show active" id="tab-upload">
+        <h5 class="cyber-heading mb-3"><i class="fa-solid fa-mobile-screen-button me-2"></i>Upload APK</h5>
+
+        <div id="dropzone" class="dropzone mb-3">
+          <input type="file" id="apkFileInput" accept=".apk" hidden>
+          <div class="dropzone-inner">
+            <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2 text-accent"></i>
+            <p class="mb-1">Drag &amp; drop your <strong>.apk</strong> here</p>
+            <p class="text-muted small mb-0">or click to browse — large files supported</p>
+          </div>
+        </div>
+
+        <div id="uploadProgressWrap" class="mb-3 d-none">
+          <div class="d-flex justify-content-between small mb-1">
+            <span id="uploadFileName">uploading...</span>
+            <span id="uploadPercent">0%</span>
+          </div>
+          <div class="progress cyber-progress">
+            <div id="uploadProgressBar" class="progress-bar" role="progressbar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div id="uploadResult" class="cyber-panel d-none mb-3">
+          <div class="row small">
+            <div class="col-sm-6"><span class="text-muted">Filename:</span> <span id="resFilename" class="mono"></span></div>
+            <div class="col-sm-6"><span class="text-muted">Size:</span> <span id="resSize" class="mono"></span></div>
+            <div class="col-12 mt-1"><span class="text-muted">SHA-256:</span> <span id="resSha256" class="mono break-all"></span></div>
+          </div>
+        </div>
+
+        <button id="btnSignDefault" class="btn btn-cyber w-100" disabled>
+          <i class="fa-solid fa-signature me-2"></i>Sign with Debug Keystore
+        </button>
+
+        <hr class="cyber-hr my-4">
+        <h6 class="cyber-heading small"><i class="fa-solid fa-terminal me-2"></i>Build Log</h6>
+        <pre id="buildLog" class="build-log">Awaiting job...</pre>
+
+        <div id="verifyResult" class="cyber-panel d-none mt-3"></div>
+
+        <div id="downloadArea" class="d-none mt-3 d-flex gap-2 flex-wrap"></div>
+      </div>
+
+      <!-- ============ GENERATE KEYSTORE ============ -->
+      <div class="tab-pane fade" id="tab-keystore">
+        <h5 class="cyber-heading mb-3"><i class="fa-solid fa-key me-2"></i>Generate a New Keystore</h5>
+        <form id="keystoreForm" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Alias</label>
+            <input required name="alias" class="form-control cyber-input" placeholder="mykeyalias">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">RSA Key Size</label>
+            <select name="key_size" class="form-select cyber-input">
+              <option value="2048" selected>2048</option>
+              <option value="4096">4096</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Keystore Password</label>
+            <input required type="password" name="store_password" class="form-control cyber-input" minlength="6">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Key Password</label>
+            <input required type="password" name="key_password" class="form-control cyber-input" minlength="6">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Organization (O)</label>
+            <input required name="organization" class="form-control cyber-input" placeholder="BIZ FACTORY">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Organizational Unit (OU)</label>
+            <input required name="organizational_unit" class="form-control cyber-input" placeholder="Engineering">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Common Name (CN)</label>
+            <input required name="common_name" class="form-control cyber-input" placeholder="Your Name / App">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Locality (L)</label>
+            <input required name="locality" class="form-control cyber-input" placeholder="City">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">State (ST)</label>
+            <input required name="state" class="form-control cyber-input" placeholder="State">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Country Code (C)</label>
+            <input required name="country_code" maxlength="2" class="form-control cyber-input text-uppercase" placeholder="US">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Validity (days)</label>
+            <input required type="number" name="validity_days" class="form-control cyber-input" value="10000" min="1" max="36500">
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-cyber w-100">
+              <i class="fa-solid fa-hammer me-2"></i>Generate Keystore
+            </button>
+          </div>
+        </form>
+        <div id="keystoreResult" class="cyber-panel d-none mt-3"></div>
+      </div>
+
+      <!-- ============ SIGN WITH CUSTOM KEYSTORE ============ -->
+      <div class="tab-pane fade" id="tab-custom">
+        <h5 class="cyber-heading mb-3"><i class="fa-solid fa-file-signature me-2"></i>Sign with Custom Keystore</h5>
+
+        <div class="alert cyber-alert small mb-3">
+          <i class="fa-solid fa-circle-info me-1"></i>
+          Upload an APK in the <strong>Upload &amp; Sign</strong> tab first, then come back here to sign it with your own keystore.
+        </div>
+
+        <form id="customSignForm" class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Keystore Source</label>
+            <select id="ksSourceSelect" name="keystore_id" class="form-select cyber-input">
+              <option value="">-- Upload a new keystore file --</option>
+              {% for ks in keystores %}
+              <option value="{{ ks.id }}">{{ ks.filename }} ({{ ks.alias }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12" id="ksUploadWrap">
+            <label class="form-label">Keystore File (.jks / .keystore)</label>
+            <input type="file" name="keystore_file" id="ksFileInput" accept=".jks,.keystore" class="form-control cyber-input">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Keystore Password</label>
+            <input required type="password" name="ks_pass" class="form-control cyber-input">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Key Alias</label>
+            <input required name="key_alias" class="form-control cyber-input">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Key Password</label>
+            <input required type="password" name="key_pass" class="form-control cyber-input">
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-cyber w-100" id="btnSignCustom">
+              <i class="fa-solid fa-signature me-2"></i>Sign APK
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= RIGHT: RECENT BUILDS ================= -->
+  <div class="col-lg-4">
+    <div class="cyber-card p-3">
+      <h6 class="cyber-heading mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i>Recent Builds</h6>
+      <div class="build-list">
+        {% for b in builds %}
+        <div class="build-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="mono small text-truncate" style="max-width:170px" title="{{ b.original_name }}">{{ b.original_name }}</span>
+            <span class="badge status-badge status-{{ b.status }}">{{ b.status }}</span>
+          </div>
+          <div class="d-flex justify-content-between small text-muted mt-1">
+            <span>{{ b.sign_type or "—" }}</span>
+            <span>{{ b.created_at }}</span>
+          </div>
+          {% if b.status == 'success' %}
+          <div class="mt-2 d-flex gap-2">
+            <a href="/download/apk/{{ b.id }}" class="btn btn-sm btn-cyber-outline flex-fill"><i class="fa-solid fa-download"></i> APK</a>
+            <a href="/download/log/{{ b.id }}" class="btn btn-sm btn-cyber-outline flex-fill"><i class="fa-solid fa-file-lines"></i> Log</a>
+          </div>
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-muted small mb-0">No builds yet. Upload an APK to get started.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.KEYSTORE_OPTIONS = {{ keystores|tojson }};
+</script>
+{% endblock %}
