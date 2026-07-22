@@ -178,12 +178,12 @@ and distribute any APK you process with this tool.
 
 ## 📄 License
 
-Built by **BIZ FACTORY** (@bizft) — MKX GitHub Cloud  
+Built by **BIZ FACTORY** (@bizft) — APK SIGNER
 For personal or commercial use. Do not redistribute as your own product.
 
 ---
 
-*MKX GitHub Cloud © 2025 BIZ FACTORY — @mk_hossain*
+*APK SINGER © 2026 BIZ FACTORY — @mk_hossain*
 
 
 
