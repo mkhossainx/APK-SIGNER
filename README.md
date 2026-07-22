@@ -175,3 +175,15 @@ entries older than that window in production.
 Provided as-is for legitimate development and release-signing
 workflows. You are responsible for ensuring you have the right to sign
 and distribute any APK you process with this tool.
+
+## 📄 License
+
+Built by **BIZ FACTORY** (@bizft) — MKX GitHub Cloud  
+For personal or commercial use. Do not redistribute as your own product.
+
+---
+
+*MKX GitHub Cloud © 2025 BIZ FACTORY — @mk_hossain*
+
+
+
